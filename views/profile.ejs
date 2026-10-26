@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>VaBuy | My profile</title>
+    <link rel="stylesheet" href="/styles.css">
+    <script defer src="/app.js"></script>
+    <style>
+      body { margin: 0; font-family: Arial, sans-serif; background: #f7f8fa; color: #20252b; }
+      .content { max-width: 1000px; margin: 34px auto; padding: 0 20px; }
+      .panel { background: #fff; border: 1px solid #e5e7eb; border-radius: 8px; padding: 24px; margin-bottom: 20px; }
+      .profile { display: flex; align-items: center; gap: 20px; }
+      .avatar { width: 76px; height: 76px; display: grid; place-items: center; border-radius: 50%; background: #dbeafe; color: #2563eb; font-size: 28px; font-weight: bold; }
+      .grid { display: grid; grid-template-columns: repeat(auto-fit,minmax(280px,1fr)); gap: 16px; }
+      .address { border: 1px solid #e5e7eb; border-radius: 8px; padding: 18px; }
+      .address form { display: inline-block; margin: 6px 6px 0 0; }
+      label { display: block; margin: 12px 0 5px; font-weight: bold; }
+      input { box-sizing: border-box; width: 100%; padding: 10px; border: 1px solid #d5dbe3; border-radius: 6px; }
+      .row { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+      .button, button { display:inline-block; padding:10px 14px; border:0; border-radius:6px; background:#2563eb; color:#fff; text-decoration:none; cursor:pointer; }
+      .danger { background:#b42318; }
+      .muted { color:#667085; }
+      .notice { padding:12px; background:#ecfdf3; color:#027a48; border-radius:6px; }
+      .table { width:100%; border-collapse:collapse; }
+      .table th,.table td { text-align:left; padding:12px; border-bottom:1px solid #e5e7eb; }
+      @media(max-width:600px){.profile{align-items:flex-start;flex-direction:column}.row{grid-template-columns:1fr}}
+    </style>
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="site-header-inner">
+        <a class="site-brand" href="/" aria-label="VaBuy home"><span class="site-brand-mark" aria-hidden="true">V</span><span>VaBuy</span><svg class="site-brand-heart" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8l1.1 1.1L12 21l7.8-7.5 1.1-1.1a5.5 5.5 0 0 0-.1-7.8Z"/></svg></a>
+        <nav class="site-nav" aria-label="Main navigation">
+          <a href="/">Shop</a>
+          <a href="/#products">Discover</a>
+          <a href="/orders">Orders</a>
+        </nav>
+        <div class="site-actions">
+          <a class="icon-nav-link cart-nav-link" href="/cart"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 3h2l2.4 12.2a2 2 0 0 0 2 1.6h8.8a2 2 0 0 0 2-1.6L22 8H6"/><circle cx="10" cy="20" r="1"/><circle cx="19" cy="20" r="1"/></svg><span>My Cart</span></a>
+          <a class="icon-nav-link wishlist-nav-link" href="/wishlist"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8l1.1 1.1L12 21l7.8-7.5 1.1-1.1a5.5 5.5 0 0 0-.1-7.8Z"/></svg><span>Wishlist</span></a>
+          <a class="site-primary-link profile-nav-link" href="/profile" aria-current="page"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 21a8 8 0 0 0-16 0"/><circle cx="12" cy="8" r="4"/></svg><span>My Profile</span></a>
+          <form class="site-logout" action="/logout" method="post"><button type="submit">Sign out</button></form>
+        </div>
+      </div>
+    </header>
+    <main class="content">
+      <h1>My profile</h1>
+      <% if (message) { %><p class="notice" role="status"><%= message %></p><% } %>
+    <section class="panel profile">
+      <% const profileAddress = (user.addresses || []).find(address => address.isDefault) || (user.addresses || [])[0] || null; %>
+      <div class="avatar">
+        <%= user.name.split(' ').map(part => part[0]).join('').slice(0,2).toUpperCase() %>
+      </div>
+      <div>
+        <h2><%= user.name %></h2>
+        <p><%= user.email %></p>
+        <p><%= user.phone || (profileAddress && profileAddress.phone) || 'No phone number saved' %></p>
+        <% if (profileAddress) { %>
+            <address>
+              <%= profileAddress.recipient %><br>
+              <%= profileAddress.line1 %><% if (profileAddress.line2) { %>, <%= profileAddress.line2 %><% } %><br>
+              <%= profileAddress.city %><% if (profileAddress.region) { %>, <%= profileAddress.region %><% } %> <%= profileAddress.postalCode %><br>
+              <%= profileAddress.country %>
+            </address>
+          <% } else { %><p class="muted">No default address saved.</p><% } %>
+          <p class="muted">Member since <%= new Date(user.createdAt).toLocaleDateString() %></p>
+          <a class="button" href="/profile/edit">Edit profile</a>
+          <a class="button" href="/forgot-password">Forgot / change password</a>
+          <a class="button" href="/wallet">My Wallet</a>
+        </div>
+      </section>
+
+      <section class="panel">
+        <h2>Saved addresses</h2>
+        <% if (!user.addresses.length) { %><p class="muted">No saved addresses yet.</p><% } %>
+        <div class="grid">
+          <% user.addresses.forEach(address => { %>
+            <article class="address">
+              <h3><%= address.label %> <% if (address.isDefault) { %><span class="muted">(Default)</span><% } %></h3>
+              <form action="/profile/addresses/<%= address._id %>" method="post">
+                <label>Recipient<input name="recipient" value="<%= address.recipient %>" required maxlength="80"></label>
+                <div class="row">
+                  <label>Phone<input name="phone" type="tel" value="<%= address.phone %>" required maxlength="24"></label>
+                  <label>Label<input name="label" value="<%= address.label %>" maxlength="40"></label>
+                </div>
+                <label>Address line 1<input name="line1" value="<%= address.line1 %>" required maxlength="120"></label>
+                <label>Address line 2<input name="line2" value="<%= address.line2 %>" maxlength="120"></label>
+                <div class="row">
+                  <label>City<input name="city" value="<%= address.city %>" required maxlength="80"></label>
+                  <label>State / region<input name="region" value="<%= address.region %>" maxlength="80"></label>
+                </div>
+                <div class="row">
+                  <label>Postal code<input name="postalCode" value="<%= address.postalCode %>" required maxlength="20"></label>
+                  <label>Country<input name="country" value="<%= address.country %>" required maxlength="80"></label>
+                </div>
+                <label><input type="checkbox" name="isDefault" <%= address.isDefault ? 'checked' : '' %> style="width:auto"> Set as default address</label>
+                <button type="submit">Save address</button>
+              </form>
+              <% if (!address.isDefault) { %>
+                <form action="/profile/addresses/<%= address._id %>/default" method="post"><button type="submit">Make default</button></form>
+              <% } %>
+              <form action="/profile/addresses/<%= address._id %>/delete" method="post" onsubmit="return confirm('Delete this saved address?');"><button class="danger" type="submit">Delete</button></form>
+            </article>
+          <% }); %>
+        </div>
+      </section>
+
+      <section class="panel">
+        <h2>Add address</h2>
+        <form action="/profile/addresses" method="post">
+          <div class="row">
+            <label>Address label<input name="label" value="Home" maxlength="40"></label>
+            <label>Recipient name<input name="recipient" required maxlength="80"></label>
+          </div>
+          <div class="row">
+            <label>Phone<input name="phone" type="tel" required maxlength="24"></label>
+            <label>Postal code<input name="postalCode" required maxlength="20"></label>
+          </div>
+          <label>Address line 1<input name="line1" required maxlength="120"></label>
+          <label>Address line 2<input name="line2" maxlength="120"></label>
+          <div class="row">
+            <label>City<input name="city" required maxlength="80"></label>
+            <label>State / region<input name="region" maxlength="80"></label>
+          </div>
+          <label>Country<input name="country" value="India" required maxlength="80"></label>
+          <label><input type="checkbox" name="isDefault" style="width:auto"> Set as default</label>
+          <button type="submit">Add address</button>
+        </form>
+      </section>
+
+      <section class="panel">
+        <h2>Recent orders</h2>
+        <% if (!orders.length) { %><p class="muted">You have not placed an order yet.</p><% } else { %>
+          <table class="table"><thead><tr><th>Order</th><th>Date</th><th>Total</th><th>Status</th><th></th></tr></thead><tbody>
+            <% orders.forEach(order => { %>
+              <tr><td><%= order.orderNumber %></td><td><%= new Date(order.createdAt).toLocaleDateString() %></td><td>₹<%= order.total.toFixed(2) %></td><td><%= order.status %></td><td><a href="/orders/<%= order._id %>">View</a></td></tr>
+            <% }); %>
+          </tbody></table>
+        <% } %>
+        <p><a class="button" href="/orders">Order history</a></p>
+      </section>
+    </main>
+  </body>
+</html>

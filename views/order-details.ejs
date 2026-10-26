@@ -1,0 +1,75 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>VaBuy | Order <%= order.orderNumber %></title>
+    <style>
+      body{margin:0;font-family:Arial,sans-serif;background:#f7f8fa;color:#20252b}.content{max-width:900px;margin:34px auto;padding:0 20px}.panel{background:#fff;border:1px solid #e5e7eb;border-radius:8px;padding:22px;margin-bottom:20px}.item{display:flex;justify-content:space-between;gap:16px;padding:14px 0;border-bottom:1px solid #e5e7eb}.status{text-transform:capitalize;font-weight:bold}.total{font-size:20px;font-weight:bold;display:flex;justify-content:space-between}.button{padding:10px 14px;background:#b42318;color:#fff;border:0;border-radius:6px;cursor:pointer}.error{padding:12px;background:#fef3f2;color:#b42318;border-radius:6px}.notice{padding:12px;background:#ecfdf3;color:#027a48;border-radius:6px}label{display:block;margin:10px 0 5px}textarea{box-sizing:border-box;width:100%;min-height:76px;padding:10px}
+      .tracking{display:flex;list-style:none;padding:0;margin:22px 0;gap:0}.tracking li{flex:1;text-align:center;border-top:4px solid #d0d5dd;padding:10px 3px;color:#667085;font-size:13px}.tracking li.done{border-color:#12b76a;color:#027a48;font-weight:bold}.tracking li.current{border-color:#2563eb;color:#1d4ed8;font-weight:bold}
+    </style>
+    <script defer src="/app.js"></script>
+</head>
+  <body>
+    <main class="content">
+      <p><a href="/orders">← Back to orders</a></p>
+      <h1>Order <%= order.orderNumber %></h1>
+      <% if (message) { %><p class="notice" role="status"><%= message %></p><% } %>
+      <% if (error) { %><p class="error" role="alert"><%= error %></p><% } %>
+      <section class="panel">
+        <p>Placed on <%= new Date(order.createdAt).toLocaleString() %></p>
+        <p class="status">Status: <%= order.status %></p>
+        <% if (!['cancelled', 'cancellation_requested', 'return_requested', 'returned'].includes(order.status)) { const steps = ['pending', 'confirmed', 'shipped', 'delivered']; const currentStep = steps.indexOf(order.status); %>
+          <ol class="tracking" aria-label="Order tracking"><% steps.forEach((step, index) => { const labels = ['Placed', 'Confirmed', 'Shipped', 'Delivered']; %><li class="<%= index < currentStep ? 'done' : index === currentStep ? 'current' : '' %>"><%= labels[index] %></li><% }); %></ol>
+        <% } else if (order.status === 'cancellation_requested') { %><p class="notice">Cancellation request submitted. Waiting for admin review.</p><% } %>
+        <p>Payment: <%= order.paymentMethod === 'cash_on_delivery' ? 'Cash on delivery' : order.paymentMethod %> (<%= order.paymentStatus %>)</p>
+        <p><a href="/orders/<%= order._id %>/invoice.pdf">Download invoice (PDF)</a></p>
+        <% if (order.cancellationReason) { %><p>Cancellation: <%= order.cancellationReason %></p><% } %>
+        <% if (order.returnReason) { %><p>Return request: <%= order.returnReason %></p><% } %>
+        <% if (order.walletRefundStatus === 'completed') { %><p class="notice">Your refund has been credited to your wallet.</p><% } %>
+        <% if (['pending', 'failed'].includes(order.paymentStatus) && order.status === 'pending' && order.paymentMethod !== 'cash_on_delivery') { %>
+          <p><a href="/payments/<%= order.paymentMethod %>/start/<%= order._id %>">Continue payment</a></p>
+        <% } %>
+        <h2>Items</h2>
+        <% order.items.forEach(item => { %>
+          <div class="item">
+            <span><%= item.name %> × <%= item.quantity %></span>
+            <strong>₹<%= (item.unitPrice * item.quantity - Number(item.referralDiscount || 0)).toFixed(2) %></strong>
+          </div>
+        <% }); %>
+        <% if (order.offerDiscount > 0) { %><p>Product/category offer discount: −₹<%= order.offerDiscount.toFixed(2) %></p><% } %>
+        <% if (order.couponDiscount > 0) { %><p>Coupon discount: −₹<%= order.couponDiscount.toFixed(2) %></p><% } %>
+        <% if (order.referralDiscount > 0) { %><p>Referral discount (<%= order.referralCode %>): −₹<%= order.referralDiscount.toFixed(2) %></p><% } %>
+        <p>Subtotal: ₹<%= order.subtotal.toFixed(2) %></p>
+        <p>Shipping: ₹<%= order.shipping.toFixed(2) %></p>
+        <p>Tax: ₹<%= order.tax.toFixed(2) %></p>
+        <p class="total"><span>Total</span><span>₹<%= order.total.toFixed(2) %></span></p>
+        <% if (['pending', 'confirmed'].includes(order.status)) { %>
+          <form action="/orders/<%= order._id %>/cancel" method="post" onsubmit="return confirm('Cancel this order?');">
+            <label for="cancel-reason">Reason (optional)</label>
+            <textarea id="cancel-reason" name="reason" maxlength="500"></textarea>
+            <button class="button" type="submit">Request cancellation</button>
+          </form>
+        <% } else if (order.status === 'cancellation_requested') { %>
+          <p>Your cancellation request is under review.</p>
+        <% } %>
+        <% if (returnEligible) { %>
+          <form action="/orders/<%= order._id %>/return" method="post">
+            <label for="return-reason">Why are you requesting a return?</label>
+            <textarea id="return-reason" name="reason" minlength="5" maxlength="500" required></textarea>
+            <button class="button" type="submit">Request return</button>
+          </form>
+        <% } else if (order.status === 'return_requested') { %>
+          <p>Your return request is waiting for review.</p>
+        <% } %>
+      </section>
+      <section class="panel">
+        <h2>Delivery address</h2>
+        <p><%= order.shippingAddress.recipient %> · <%= order.shippingAddress.phone %></p>
+        <p><%= order.shippingAddress.line1 %><% if (order.shippingAddress.line2) { %>, <%= order.shippingAddress.line2 %><% } %></p>
+        <p><%= order.shippingAddress.city %><% if (order.shippingAddress.region) { %>, <%= order.shippingAddress.region %><% } %> <%= order.shippingAddress.postalCode %></p>
+        <p><%= order.shippingAddress.country %></p>
+      </section>
+    </main>
+  </body>
+</html>

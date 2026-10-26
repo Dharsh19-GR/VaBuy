@@ -1,0 +1,57 @@
+<%- include('../partials/head') %>
+<section class="simple-page checkout-page">
+  <div class="simple-heading">
+    <p class="eyebrow">Northstar / Checkout</p>
+    <h1>Almost yours.</h1>
+  </div>
+  <div class="checkout-layout">
+    <form class="checkout-form">
+      <fieldset>
+        <legend>Contact</legend>
+        <label
+          >Email address<input type="email" placeholder="you@example.com"
+        /></label>
+      </fieldset>
+      <fieldset>
+        <legend>Delivery</legend>
+        <div class="form-row">
+          <label>First name<input type="text" placeholder="First name" /></label
+          ><label>Last name<input type="text" placeholder="Last name" /></label>
+        </div>
+        <label>Address<input type="text" placeholder="Street address" /></label>
+        <div class="form-row">
+          <label>City<input type="text" placeholder="City" /></label
+          ><label
+            >Postal code<input type="text" placeholder="Postal code"
+          /></label>
+        </div>
+      </fieldset>
+      <fieldset>
+        <legend>Payment</legend>
+        <label
+          >Card number<input type="text" placeholder="1234 1234 1234 1234"
+        /></label>
+        <div class="form-row">
+          <label>Expiry date<input type="text" placeholder="MM / YY" /></label
+          ><label>CVC<input type="text" placeholder="123" /></label>
+        </div>
+      </fieldset>
+      <button class="button button-dark" type="submit">
+        Place order <span>↗</span>
+      </button>
+    </form>
+    <aside class="order-summary checkout-summary">
+      <p class="eyebrow">In your bag</p>
+      <div class="mini-product">
+        <div class="mini-image chair-image"></div>
+        <span>Form 01 × 1</span><strong>$780</strong>
+      </div>
+      <div class="mini-product">
+        <div class="mini-image tray-image"></div>
+        <span>Daily tray × 1</span><strong>$68</strong>
+      </div>
+      <div class="summary-total"><span>Total</span><strong>$848</strong></div>
+    </aside>
+  </div>
+</section>
+<%- include('../partials/foot') %>

@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 700" role="img" aria-labelledby="title">
+  <title id="title">Natural canvas tote bag, side view</title>
+  <defs><linearGradient id="bg" x2="1" y2="1"><stop stop-color="#e8f0e6"/><stop offset="1" stop-color="#f4dfc1"/></linearGradient><filter id="shadow"><feDropShadow dx="0" dy="16" stdDeviation="15" flood-color="#615642" flood-opacity=".2"/></filter></defs>
+  <rect width="900" height="700" rx="42" fill="url(#bg)"/><path d="M90 500c95-95 128-79 199-7s121 69 206 4 147-78 315 23v180H90z" fill="#fff" opacity=".23"/><ellipse cx="456" cy="581" rx="190" ry="27" fill="#81856a" opacity=".2"/>
+  <g filter="url(#shadow)"><path d="M349 279h211l28 289H320z" fill="#d6b589" stroke="#96764e" stroke-width="7"/><path d="M387 283c0-100 24-149 68-149s68 49 68 149" fill="none" stroke="#96764e" stroke-width="21" stroke-linecap="round"/><path d="M332 309l228-6 22 249-49 16-173-6z" fill="#e3c59b" opacity=".78"/><path d="M560 302l28 266M337 543l235 15" stroke="#a38357" stroke-width="6"/><path d="M349 342h203" stroke="#f6e8d1" stroke-width="7" opacity=".7"/></g><text x="450" y="634" text-anchor="middle" font-family="Arial,sans-serif" font-size="22" letter-spacing="4" fill="#63735f">NATURAL CANVAS</text>
+</svg>

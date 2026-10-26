@@ -1,0 +1,90 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>VaBuy | Checkout</title>
+    <style>
+      body{margin:0;font-family:Arial,sans-serif;background:#f7f8fa;color:#20252b}.content{max-width:1000px;margin:34px auto;padding:0 20px}.layout{display:grid;grid-template-columns:1fr 320px;gap:24px}.panel{background:#fff;border:1px solid #e5e7eb;border-radius:8px;padding:24px}label{display:block;margin:12px 0 6px;font-weight:bold}input,select{box-sizing:border-box;width:100%;padding:10px;border:1px solid #d5dbe3;border-radius:6px}.payment-option{display:flex;align-items:center;gap:8px;font-weight:normal}.payment-option input{width:auto}.row{display:grid;grid-template-columns:1fr 1fr;gap:14px}.summary p{display:flex;justify-content:space-between}.item{display:flex;justify-content:space-between;gap:14px;padding:10px 0;border-bottom:1px solid #e5e7eb}.total{font-size:20px;font-weight:bold}.button{width:100%;margin-top:20px;padding:13px;border:0;border-radius:6px;background:#2563eb;color:white;font-weight:bold;cursor:pointer}.error{padding:12px;background:#fef3f2;color:#b42318;border-radius:6px}.muted{color:#667085}.address-fields[hidden]{display:none}@media(max-width:700px){.layout,.row{grid-template-columns:1fr}}
+    </style>
+    <script defer src="/app.js"></script>
+</head>
+  <body>
+    <main class="content">
+      <p><a href="/cart">← Back to My Cart</a></p>
+      <h1>Checkout</h1>
+      <% if (error) { %><p class="error" role="alert"><%= error %></p><% } %>
+      <div class="layout">
+        <section class="panel">
+          <form action="/checkout" method="post">
+            <h2>Delivery address</h2>
+            <label for="addressId">Choose a saved address</label>
+            <select id="addressId" name="addressId">
+              <% if (user.addresses.length) { %>
+                <% user.addresses.forEach(address => { %>
+                  <option value="<%= address._id %>" <%= address.isDefault ? 'selected' : '' %>><%= address.label %> — <%= address.recipient %>, <%= address.line1 %>, <%= address.city %></option>
+                <% }); %>
+              <% } %>
+              <option value="new" <%= user.addresses.length ? '' : 'selected' %>>Enter a new address</option>
+            </select>
+            <div id="address-fields" class="address-fields" <%= user.addresses.length ? 'hidden' : '' %>>
+              <div class="row">
+                <label>Address label<input name="label" value="Delivery" maxlength="40"></label>
+                <label>Recipient name<input name="recipient" value="<%= user.name %>" maxlength="80"></label>
+              </div>
+              <label>Phone<input name="phone" type="tel" value="<%= user.phone || '' %>" maxlength="24"></label>
+              <label>Address line 1<input name="line1" maxlength="120"></label>
+              <label>Address line 2<input name="line2" maxlength="120"></label>
+              <div class="row">
+                <label>City<input name="city" maxlength="80"></label>
+                <label>State / region<input name="region" maxlength="80"></label>
+              </div>
+              <div class="row">
+                <label>Postal code<input name="postalCode" maxlength="20"></label>
+                <label>Country<input name="country" value="India" maxlength="80"></label>
+              </div>
+              <label><input type="checkbox" name="saveAddress" style="width:auto"> Save this address to my profile</label>
+            </div>
+            <h2>Payment</h2>
+            <label class="payment-option"><input type="radio" name="paymentMethod" value="cash_on_delivery" <%= codAllowed ? 'checked' : 'disabled' %>> Cash on delivery</label>
+            <% if (!codAllowed) { %><p class="muted" role="status">Cash on delivery is unavailable for orders above ₹1,000. Choose an online payment method.</p><% } %>
+            <% if (paymentOptions.razorpay) { %>
+              <label class="payment-option"><input type="radio" name="paymentMethod" value="razorpay" <%= !codAllowed ? 'checked' : '' %>> Pay online with Razorpay</label>
+            <% } %>
+            <% if (paymentOptions.paypal) { %>
+              <label class="payment-option"><input type="radio" name="paymentMethod" value="paypal" <%= !codAllowed && !paymentOptions.razorpay ? 'checked' : '' %>> Pay online with PayPal</label>
+            <% } %>
+            <% if (!paymentOptions.razorpay && !paymentOptions.paypal) { %><p class="muted">Online payment with Razorpay is unavailable until RAZORPAY_KEY_ID and RAZORPAY_KEY_SECRET are set in the server environment.</p><% } %>
+            <button class="button" type="submit">Place order</button>
+          </form>
+        </section>
+        <aside class="panel summary">
+          <h2>Your order</h2>
+          <% cartItems.forEach(item => { %>
+            <div class="item"><span><%= item.name %> × <%= item.quantity %></span><strong>₹<%= (item.price * item.quantity).toFixed(2) %></strong></div>
+          <% }); %>
+          <% if (offerDiscount > 0) { %><p><span>Product/category offers</span><span>−₹<%= offerDiscount.toFixed(2) %></span></p><% } %>
+          <% if (couponDiscount > 0) { %><p><span>Coupons</span><span>−₹<%= couponDiscount.toFixed(2) %></span></p><% } %>
+          <% if (referralDiscount > 0) { %><p><span>Referral offer</span><span>−₹<%= referralDiscount.toFixed(2) %></span></p><% } %>
+          <p><span>Subtotal after discounts</span><span>₹<%= order.subtotal.toFixed(2) %></span></p>
+          <p><span>Shipping</span><span>₹<%= order.shipping.toFixed(2) %></span></p>
+          <p><span>Tax</span><span>₹<%= order.tax.toFixed(2) %></span></p>
+          <p class="total"><span>Total</span><span>₹<%= order.total.toFixed(2) %></span></p>
+        </aside>
+      </div>
+    </main>
+    <script>
+      const addressSelect = document.getElementById("addressId");
+      const addressFields = document.getElementById("address-fields");
+      const updateAddressFields = () => {
+        const enteringNewAddress = addressSelect.value === "new";
+        addressFields.hidden = !enteringNewAddress;
+        addressFields.querySelectorAll("input:not([type=checkbox])").forEach((input) => {
+          input.required = enteringNewAddress && ["recipient", "phone", "line1", "city", "postalCode", "country"].includes(input.name);
+        });
+      };
+      addressSelect.addEventListener("change", updateAddressFields);
+      updateAddressFields();
+    </script>
+  </body>
+</html>

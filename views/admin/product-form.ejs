@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>VaBuy Admin | <%= isEdit ? 'Edit' : 'Add' %> product</title>
+    <style>
+      body { margin: 0; font-family: Arial, sans-serif; background: #f4f6f8; color: #20252b; }
+      .panel { max-width: 760px; margin: 30px auto; padding: 26px; background: #fff; border: 1px solid #e5e7eb; border-radius: 8px; }
+      label { display: block; margin: 15px 0 6px; font-weight: bold; }
+      input, select, textarea { box-sizing: border-box; width: 100%; padding: 11px; border: 1px solid #d5dbe3; border-radius: 6px; }
+      textarea { min-height: 120px; }
+      .row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+      button { margin-top: 22px; padding: 12px 18px; border: 0; border-radius: 6px; background: #2563eb; color: #fff; font-weight: bold; cursor: pointer; }
+      a { color: #2563eb; }
+      .helper { color: #475467; font-size: 13px; margin-top: 6px; }
+      .gallery { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 10px; }
+      .gallery img, .preview img { width: 100px; height: 100px; object-fit: cover; border-radius: 6px; }
+      .preview { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 10px; }
+      @media(max-width:600px){ .row { grid-template-columns: 1fr; } }
+    </style>
+  </head>
+  <body>
+    <main class="panel">
+      <p><a href="/admin/products">Back to products</a></p>
+      <h1><%= isEdit ? 'Edit' : 'Add' %> product</h1>
+      <form action="/admin/products" method="post" enctype="multipart/form-data">
+        <% if (isEdit && product && product._id) { %>
+          <input type="hidden" name="productId" value="<%= product._id %>" />
+        <% } %>
+        <label for="name">Product name</label>
+        <input id="name" name="name" type="text" value="<%= product.name || '' %>" required />
+        <label for="brand">Brand (optional)</label>
+        <input id="brand" name="brand" type="text" maxlength="80" value="<%= product.brand || '' %>" />
+
+        <div class="row">
+          <div>
+            <label for="category">Category</label>
+            <select id="category" name="category" required>
+              <option value="">Select a category</option>
+              <% categories.forEach(category => { %>
+                <option value="<%= category._id %>" <%= String(product.category && product.category._id ? product.category._id : product.category) === String(category._id) ? 'selected' : '' %>><%= category.name %></option>
+              <% }); %>
+            </select>
+          </div>
+          <div>
+            <label for="price">Price (INR)</label>
+            <input id="price" name="price" type="number" step="0.01" min="0" value="<%= product.price || '' %>" required />
+          </div>
+        </div>
+
+        <div class="row">
+          <div>
+            <label for="stock">Stock quantity</label>
+            <input id="stock" name="stock" type="number" min="0" step="1" value="<%= product.stock || 0 %>" required />
+          </div>
+          <div>
+            <label for="maxPerOrder">Maximum quantity per customer</label>
+            <input id="maxPerOrder" name="maxPerOrder" type="number" min="1" max="99" step="1" value="<%= product.maxPerOrder || 5 %>" required />
+          </div>
+        </div>
+        <label><input name="isFeatured" type="checkbox" <%= product.isFeatured ? 'checked' : '' %> style="width:auto"> Feature this product</label>
+
+        <label for="description">Description</label>
+        <textarea id="description" name="description"><%= product.description || '' %></textarea>
+
+        <h2>Product details</h2>
+        <div class="row">
+          <div>
+            <label for="compareAtPrice">Original price in INR (optional)</label>
+            <input id="compareAtPrice" name="compareAtPrice" type="number" min="0" step="0.01" value="<%= product.compareAtPrice || '' %>" />
+          </div>
+          <div>
+            <label for="couponCode">Coupon code (optional)</label>
+            <input id="couponCode" name="couponCode" type="text" maxlength="30" value="<%= product.couponCode || '' %>" />
+          </div>
+        </div>
+        <label for="couponDiscountPercent">Coupon discount percentage</label>
+        <input id="couponDiscountPercent" name="couponDiscountPercent" type="number" min="0" max="100" step="1" value="<%= product.couponDiscountPercent || 0 %>" />
+
+        <label for="highlights">Highlights (one per line)</label>
+        <textarea id="highlights" name="highlights"><%= (product.highlights || []).join('\n') %></textarea>
+        <label for="specifications">Specifications (one “name: value” per line)</label>
+        <textarea id="specifications" name="specifications"><%= (product.specifications || []).map(specification => `${specification.name}: ${specification.value}`).join('\n') %></textarea>
+
+        <label for="images">Product images (select at least 3 different images)</label>
+        <input id="images" name="images" type="file" accept="image/*" multiple <%= !isEdit || !product.images || product.images.length < 3 ? 'required' : '' %> />
+        <div class="helper"><%= isEdit && product.images && product.images.length >= 3 ? 'Select at least 3 different photos of the same product from different angles to replace the current gallery. Leave empty to keep current images.' : 'Upload at least 3 different photos of the same product from different angles. Images are center-cropped and resized to 1000 × 1000 before saving.' %></div>
+        <% if (isEdit && product.images && product.images.length) { %>
+          <div class="gallery" aria-label="Current product images">
+            <% product.images.forEach((image, index) => { %>
+              <img src="<%= image %>" alt="Current product image <%= index + 1 %>" />
+            <% }); %>
+          </div>
+        <% } %>
+        <div id="image-preview" class="preview" aria-live="polite"></div>
+
+        <button type="submit"><%= isEdit ? 'Update product' : 'Save product' %></button>
+      </form>
+    </main>
+    <script>
+      const imageInput = document.getElementById("images");
+      const preview = document.getElementById("image-preview");
+      imageInput.addEventListener("change", () => {
+        preview.replaceChildren();
+        Array.from(imageInput.files || []).forEach((file) => {
+          if (!file.type.startsWith("image/")) return;
+          const image = document.createElement("img");
+          image.alt = file.name;
+          image.src = URL.createObjectURL(file);
+          image.onload = () => URL.revokeObjectURL(image.src);
+          preview.appendChild(image);
+        });
+      });
+      imageInput.form.addEventListener("submit", (event) => {
+        const selectedCount = imageInput.files ? imageInput.files.length : 0;
+        const requiredCount = <%= !isEdit || !product.images || product.images.length < 3 ? 'true' : 'false' %>;
+        if ((requiredCount || selectedCount > 0) && selectedCount < 3) {
+          event.preventDefault();
+          window.alert("Select at least 3 different product images.");
+        }
+      });
+    </script>
+  </body>
+</html>

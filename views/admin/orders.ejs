@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>VaBuy Admin | Orders</title>
+    <style>
+      body{margin:0;font-family:Arial,sans-serif;background:#f4f6f8;color:#20252b}.content{max-width:1200px;margin:32px auto;padding:0 20px}.panel{padding:20px;background:#fff;border:1px solid #e5e7eb;border-radius:8px}.table{width:100%;border-collapse:collapse}.table th,.table td{text-align:left;padding:13px;border-bottom:1px solid #e5e7eb}.table a{color:#2563eb}.status{text-transform:capitalize}
+    </style>
+  </head>
+  <body>
+    <main class="content">
+      <p><a href="/admin">← Dashboard</a> · <a href="/admin/inventory">Inventory</a></p>
+      <h1>Orders</h1>
+      <section class="panel">
+        <% if (!orders.length) { %><p>No orders have been placed yet.</p><% } else { %>
+          <table class="table">
+            <thead><tr><th>Order</th><th>Customer</th><th>Placed</th><th>Total</th><th>Payment</th><th>Status</th><th></th></tr></thead>
+            <tbody>
+              <% orders.forEach(order => { %>
+                <tr>
+                  <td><%= order.orderNumber %></td>
+                  <td><%= order.customerName %><br><small><%= order.customerEmail %></small></td>
+                  <td><%= new Date(order.createdAt).toLocaleString() %></td>
+                  <td>₹<%= order.total.toFixed(2) %></td>
+                  <td><%= order.paymentMethod === 'cash_on_delivery' ? 'COD' : order.paymentMethod %> · <%= order.paymentStatus %></td>
+                  <td class="status"><%= order.status %></td>
+                  <td><a href="/admin/orders/<%= order._id %>">Manage</a></td>
+                </tr>
+              <% }); %>
+            </tbody>
+          </table>
+        <% } %>
+      </section>
+    </main>
+  </body>
+</html>

@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VaBuy Admin | Sales report</title>
+    <style>
+      body{margin:0;font-family:Arial,sans-serif;background:#f4f6f8;color:#20252b}.content{max-width:1320px;margin:32px auto;padding:0 20px}.panel,.metric{padding:18px;background:#fff;border:1px solid #e5e7eb;border-radius:8px}.filters{display:flex;gap:12px;flex-wrap:wrap;align-items:end}.filters label{display:block;margin-bottom:5px;font-weight:bold}.filters input,.filters select{padding:9px;border:1px solid #d5dbe3;border-radius:6px}.filters button,.button{padding:10px 14px;background:#2563eb;color:white;border:0;border-radius:6px;text-decoration:none;cursor:pointer}.metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(175px,1fr));gap:12px;margin:18px 0}.metric span{color:#667085}.metric strong{display:block;margin-top:8px;font-size:22px}.table-wrap{overflow:auto}.table{width:100%;border-collapse:collapse;background:#fff}.table th,.table td{padding:11px;text-align:right;border-bottom:1px solid #e5e7eb;white-space:nowrap}.table th:first-child,.table td:first-child{text-align:left}.error{padding:12px;background:#fef3f2;color:#b42318}.export{display:flex;gap:10px;margin:16px 0;flex-wrap:wrap}
+    </style>
+    <link rel="stylesheet" href="/styles.css">
+    <script defer src="/app.js"></script>
+  </head>
+  <body>
+    <main class="content">
+      <p><a href="/admin">← Dashboard</a> · <a href="/admin/offers">Manage offers</a></p>
+      <h1>Sales report</h1>
+      <section class="panel">
+        <form class="filters" action="/admin/reports/sales" method="get">
+          <div><label for="period">Date range</label>
+            <select id="period" name="period">
+              <option value="day" <%= filters.period === 'day' ? 'selected' : '' %>>Today (1 day)</option>
+              <option value="week" <%= filters.period === 'week' ? 'selected' : '' %>>Last 7 days</option>
+              <option value="month" <%= filters.period === 'month' ? 'selected' : '' %>>Last 30 days</option>
+              <option value="year" <%= filters.period === 'year' ? 'selected' : '' %>>This year</option>
+              <option value="custom" <%= filters.period === 'custom' ? 'selected' : '' %>>Custom range</option>
+            </select>
+          </div>
+          <div><label for="groupBy">Group by</label><select id="groupBy" name="groupBy">
+            <option value="daily" <%= filters.groupBy === 'daily' ? 'selected' : '' %>>Daily</option>
+            <option value="weekly" <%= filters.groupBy === 'weekly' ? 'selected' : '' %>>Weekly</option>
+            <option value="yearly" <%= filters.groupBy === 'yearly' ? 'selected' : '' %>>Yearly</option>
+          </select></div>
+          <div><label for="start">Start date</label><input id="start" name="start" type="date" value="<%= filters.start %>"></div>
+          <div><label for="end">End date</label><input id="end" name="end" type="date" value="<%= filters.end %>"></div>
+          <button type="submit">Generate report</button>
+        </form>
+      </section>
+      <% if (error) { %><p class="error" role="alert"><%= error %></p><% } %>
+      <% if (report) { %>
+        <p><strong>Report period:</strong> <%= report.from.toLocaleDateString() %> – <%= report.to.toLocaleDateString() %></p>
+        <section class="metrics" aria-label="Overall sales totals">
+          <article class="metric"><span>Overall sales count (orders)</span><strong><%= report.summary.orders %></strong></article>
+          <article class="metric"><span>Units sold</span><strong><%= report.summary.units %></strong></article>
+          <article class="metric"><span>Overall order amount (gross)</span><strong>₹<%= report.summary.gross.toFixed(2) %></strong></article>
+          <article class="metric"><span>Overall discount</span><strong>₹<%= report.summary.discounts.toFixed(2) %></strong></article>
+          <article class="metric"><span>Coupons deducted</span><strong>₹<%= report.summary.couponDiscounts.toFixed(2) %></strong></article>
+          <article class="metric"><span>Refunds</span><strong>₹<%= report.summary.refunds.toFixed(2) %></strong></article>
+          <article class="metric"><span>Net sales</span><strong>₹<%= report.summary.netSales.toFixed(2) %></strong></article>
+        </section>
+        <div class="export">
+          <a class="button" href="/admin/reports/sales/export/xlsx?period=<%= filters.period %>&groupBy=<%= filters.groupBy %>&start=<%= encodeURIComponent(filters.start) %>&end=<%= encodeURIComponent(filters.end) %>">Download Excel</a>
+          <a class="button" href="/admin/reports/sales/export/pdf?period=<%= filters.period %>&groupBy=<%= filters.groupBy %>&start=<%= encodeURIComponent(filters.start) %>&end=<%= encodeURIComponent(filters.end) %>">Download PDF</a>
+        </div>
+        <section class="table-wrap">
+          <table class="table">
+            <thead><tr><th>Period</th><th>Orders</th><th>Units</th><th>Gross</th><th>Product/category offers</th><th>Coupons</th><th>Referral</th><th>Total discount</th><th>Refunds</th><th>Net sales</th></tr></thead>
+            <tbody>
+              <% report.rows.forEach(row => { %><tr>
+                <td><%= row.period %></td><td><%= row.orders %></td><td><%= row.units %></td>
+                <td>₹<%= row.gross.toFixed(2) %></td><td>₹<%= row.productCategoryDiscounts.toFixed(2) %></td>
+                <td>₹<%= row.couponDiscounts.toFixed(2) %></td><td>₹<%= row.referralDiscounts.toFixed(2) %></td>
+                <td>₹<%= row.discounts.toFixed(2) %></td><td>₹<%= row.refunds.toFixed(2) %></td><td>₹<%= row.netSales.toFixed(2) %></td>
+              </tr><% }); %>
+              <% if (!report.rows.length) { %><tr><td colspan="10">No paid sales in this date range.</td></tr><% } %>
+            </tbody>
+          </table>
+        </section>
+      <% } %>
+    </main>
+    <script>
+      const period = document.getElementById("period");
+      const start = document.getElementById("start");
+      const end = document.getElementById("end");
+      const updateDates = () => {
+        const custom = period.value === "custom";
+        start.required = custom;
+        end.required = custom;
+      };
+      period.addEventListener("change", updateDates);
+      updateDates();
+    </script>
+  </body>
+</html>

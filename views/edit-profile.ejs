@@ -1,0 +1,48 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Edit profile | VaBuy</title>
+    <style>
+      body{margin:0;background:#f7f8fa;font-family:Arial,sans-serif;color:#20252b}.panel{max-width:600px;margin:48px auto;padding:28px;background:#fff;border:1px solid #e5e7eb;border-radius:8px}label{display:block;margin:16px 0 6px;font-weight:bold}input{box-sizing:border-box;width:100%;padding:11px;border:1px solid #d5dbe3;border-radius:6px}button{margin-top:20px;padding:11px 16px;background:#2563eb;color:#fff;border:0;border-radius:6px;cursor:pointer}.error{padding:12px;background:#fef3f2;color:#b42318;border-radius:6px}.muted{color:#667085}.row{display:grid;grid-template-columns:1fr 1fr;gap:12px}.address-fields{margin-top:24px;padding-top:16px;border-top:1px solid #e5e7eb}@media(max-width:600px){.row{grid-template-columns:1fr}}
+    </style>
+    <script defer src="/app.js"></script>
+</head>
+  <body>
+    <main class="panel">
+      <p><a href="/profile">← Back to profile</a></p>
+      <h1>Edit profile</h1>
+      <% if (error) { %><p class="error" role="alert"><%= error %></p><% } %>
+      <form action="/profile/edit" method="post">
+        <label for="name">Name</label>
+        <input id="name" name="name" value="<%= user.name %>" required minlength="2" maxlength="80" autocomplete="name">
+        <label for="phone">Phone</label>
+        <input id="phone" name="phone" type="tel" value="<%= user.phone || '' %>" maxlength="24" autocomplete="tel">
+        <section class="address-fields" aria-labelledby="address-heading">
+          <h2 id="address-heading">Default address</h2>
+          <p class="muted">Optional. Complete the required fields to save or update the default address shown on your profile.</p>
+          <div class="row">
+            <div><label for="addressLabel">Address label</label><input id="addressLabel" name="addressLabel" value="<%= addressDraft.label || 'Home' %>" maxlength="40"></div>
+            <div><label for="addressRecipient">Recipient name</label><input id="addressRecipient" name="addressRecipient" value="<%= addressDraft.recipient || '' %>" maxlength="80" autocomplete="name"></div>
+          </div>
+          <label for="addressPhone">Address phone</label>
+          <input id="addressPhone" name="addressPhone" type="tel" value="<%= addressDraft.phone || '' %>" maxlength="24" autocomplete="tel">
+          <label for="addressLine1">Address line 1</label>
+          <input id="addressLine1" name="addressLine1" value="<%= addressDraft.line1 || '' %>" maxlength="120" autocomplete="address-line1">
+          <label for="addressLine2">Address line 2</label>
+          <input id="addressLine2" name="addressLine2" value="<%= addressDraft.line2 || '' %>" maxlength="120" autocomplete="address-line2">
+          <div class="row">
+            <div><label for="addressCity">City</label><input id="addressCity" name="addressCity" value="<%= addressDraft.city || '' %>" maxlength="80" autocomplete="address-level2"></div>
+            <div><label for="addressRegion">State / region</label><input id="addressRegion" name="addressRegion" value="<%= addressDraft.region || '' %>" maxlength="80" autocomplete="address-level1"></div>
+          </div>
+          <div class="row">
+            <div><label for="addressPostalCode">Postal code</label><input id="addressPostalCode" name="addressPostalCode" value="<%= addressDraft.postalCode || '' %>" maxlength="20" autocomplete="postal-code"></div>
+            <div><label for="addressCountry">Country</label><input id="addressCountry" name="addressCountry" value="<%= addressDraft.country || 'India' %>" maxlength="80" autocomplete="country-name"></div>
+          </div>
+        </section>
+        <button type="submit">Save changes</button>
+      </form>
+    </main>
+  </body>
+</html>

@@ -1,0 +1,64 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VaBuy | Secure payment</title>
+    <link rel="stylesheet" href="/styles.css">
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+    <script defer src="/app.js"></script>
+</head>
+  <body>
+    <main class="content">
+      <section class="panel">
+        <h1>Complete your payment</h1>
+        <p>Order <strong><%= order.orderNumber %></strong></p>
+        <p>Total: <strong>₹<%= order.total.toFixed(2) %></strong></p>
+        <button class="button" id="pay-button" type="button">Pay securely with Razorpay</button>
+        <form id="payment-result" action="/payments/razorpay/verify" method="post" hidden>
+          <input type="hidden" name="localOrderId" value="<%= order._id %>">
+          <input type="hidden" name="razorpay_order_id">
+          <input type="hidden" name="razorpay_payment_id">
+          <input type="hidden" name="razorpay_signature">
+        </form>
+        <form id="payment-cancel" action="/payments/razorpay/cancel/<%= order._id %>" method="post" hidden></form>
+      </section>
+    </main>
+    <% const scriptJson = value => JSON.stringify(value).replace(/</g, "\\u003c"); %>
+    <script>
+      let leavingCheckout = false;
+      const cancelPayment = () => {
+        if (leavingCheckout) return;
+        leavingCheckout = true;
+        document.getElementById("payment-cancel").submit();
+      };
+      const options = {
+        key: <%- scriptJson(razorpayKeyId) %>,
+        amount: <%= razorpayOrder.amount %>,
+        currency: "INR",
+        name: "VaBuy",
+        description: "Order <%= order.orderNumber %>",
+        order_id: <%- scriptJson(razorpayOrder.id) %>,
+        prefill: {
+          name: <%- scriptJson(order.customerName) %>,
+          email: <%- scriptJson(order.customerEmail) %>
+        },
+        handler: (response) => {
+          leavingCheckout = true;
+          const form = document.getElementById("payment-result");
+          for (const field of ["razorpay_order_id", "razorpay_payment_id", "razorpay_signature"]) {
+            form.elements[field].value = response[field];
+          }
+          form.submit();
+        },
+        modal: {
+          ondismiss: cancelPayment
+        }
+      };
+      const checkout = new Razorpay(options);
+      checkout.on("payment.failed", cancelPayment);
+      document.getElementById("pay-button").addEventListener("click", () => checkout.open());
+      checkout.open();
+    </script>
+  </body>
+</html>

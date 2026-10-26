@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>VaBuy Admin | Categories</title>
+    <style>
+      body { margin: 0; font-family: Arial, sans-serif; background: #f4f6f8; color: #20252b; }
+      .main { max-width: 1000px; margin: 30px auto; padding: 0 20px; }
+      .top { display: flex; justify-content: space-between; align-items: center; }
+      .button { display: inline-block; padding: 11px 16px; background: #2563eb; color: #fff; text-decoration: none; border-radius: 6px; }
+      .panel { overflow: auto; background: #fff; border: 1px solid #e5e7eb; border-radius: 8px; }
+      .table { width: 100%; border-collapse: collapse; }
+      .table th, .table td { padding: 15px; text-align: left; border-bottom: 1px solid #e5e7eb; }
+      .link { color: #2563eb; margin-right: 12px; }
+    </style>
+  </head>
+  <body>
+    <main class="main">
+      <p><a href="/admin">Admin dashboard</a></p>
+      <div class="top">
+        <h1>Categories</h1>
+        <a class="button" href="/admin/categories/new">Add category</a>
+      </div>
+      <section class="panel">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Slug</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% categories.forEach(category => { %>
+              <tr>
+                <td><%= category.name %></td>
+                <td><%= category.slug %></td>
+                <td>
+                  <a class="link" href="/admin/categories/<%= category._id %>/edit">Edit</a>
+                  <form action="/admin/categories/<%= category._id %>/delete" method="post" style="display:inline;" onsubmit="return confirm('Soft-delete this category?');">
+                    <button class="link" type="submit" style="border:0;background:none;padding:0;font:inherit;cursor:pointer;">Delete</button>
+                  </form>
+                </td>
+              </tr>
+            <% }); %>
+          </tbody>
+        </table>
+      </section>
+    </main>
+  </body>
+</html>

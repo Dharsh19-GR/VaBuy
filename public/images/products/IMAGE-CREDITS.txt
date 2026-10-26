@@ -1,0 +1,68 @@
+Product photos are local copies of the Wikimedia Commons images listed below.
+The files are unchanged from the Commons thumbnails. The four catalog products
+are demo listings; these photos are illustrative references, not the exact models.
+
+Canvas Tote Bag
+- canvas-tote-photo-1.jpg: "Baghashtag-Kanvas-Bez-Canta" by Efkanakbiyik; CC0.
+  https://commons.wikimedia.org/wiki/File:Baghashtag-Kanvas-Bez-Canta.jpg
+  https://creativecommons.org/publicdomain/zero/1.0/
+- canvas-tote-photo-2.jpg: "Cebu Tote Bag" by Daragang Nagueña; CC BY 4.0.
+  https://commons.wikimedia.org/wiki/File:Cebu_Tote_Bag.jpg
+  https://creativecommons.org/licenses/by/4.0/
+- canvas-tote-photo-3.jpg: "Bag-Den.corp-deep red tote bag,Kyoto" by Afternoon tea time; CC BY-SA 4.0.
+  https://commons.wikimedia.org/wiki/File:Bag-Den.corp-deep_red_tote_bag,Kyoto.jpg
+  https://creativecommons.org/licenses/by-sa/4.0/
+
+Portable Bluetooth Speaker
+- bluetooth-speaker-photo-1.jpg: "Beats By Dr. Dre Pill Portable Bluetooth Speaker Black N2" by Beats; CC0.
+  https://commons.wikimedia.org/wiki/File:Beats_By_Dr._Dre_Pill_Portable_Bluetooth_Speaker_Black_N2.jpg
+  https://creativecommons.org/publicdomain/zero/1.0/
+- bluetooth-speaker-photo-2.jpg: "Bluetooth Speaker like lantern - 1" by Kyu3; CC BY-SA 4.0.
+  https://commons.wikimedia.org/wiki/File:Bluetooth_Speaker_like_lantern_-_1.jpg
+  https://creativecommons.org/licenses/by-sa/4.0/
+- bluetooth-speaker-photo-3.jpg: "Bluetooth Speaker like lantern - 2" by Kyu3; CC BY-SA 4.0.
+  https://commons.wikimedia.org/wiki/File:Bluetooth_Speaker_like_lantern_-_2.jpg
+  https://creativecommons.org/licenses/by-sa/4.0/
+
+Trail Running Shoes
+- trail-shoes-photo-1.jpg: "Altra trail running shoe, Lone Peak, side view" by IceCreamForEveryone; CC BY-SA 4.0.
+  https://commons.wikimedia.org/wiki/File:Altra_trail_running_shoe,_Lone_Peak,_side_view.jpg
+  https://creativecommons.org/licenses/by-sa/4.0/
+- trail-shoes-photo-2.jpg: "Altra trail running shoe, Lone Peak, top view" by IceCreamForEveryone; CC BY-SA 4.0.
+  https://commons.wikimedia.org/wiki/File:Altra_trail_running_shoe,_Lone_Peak,_top_view.jpg
+  https://creativecommons.org/licenses/by-sa/4.0/
+- trail-shoes-photo-3.jpg: "Adidas Response Trail 16" by CLI; CC BY-SA 4.0.
+  https://commons.wikimedia.org/wiki/File:Adidas_Response_Trail_16.jpg
+  https://creativecommons.org/licenses/by-sa/4.0/
+
+Bedside Table Lamp
+- bedside-lamp-photo-1.jpg: "Bedside Table Lamp" by PatongHarbor; CC BY-SA 4.0.
+  https://commons.wikimedia.org/wiki/File:Bedside_Table_Lamp.jpg
+  https://creativecommons.org/licenses/by-sa/4.0/
+- bedside-lamp-photo-2.jpg: "1950s Ceramic Bedside Lamps pair-1" by Tangerineduel; CC BY-SA 4.0.
+  https://commons.wikimedia.org/wiki/File:1950s_Ceramic_Bedside_Lamps_pair-1.jpg
+  https://creativecommons.org/licenses/by-sa/4.0/
+- bedside-lamp-photo-3.jpg: "Nr 2677, bordsarmatur" by Eric Lindesvärd; CC BY-SA 4.0.
+  https://commons.wikimedia.org/wiki/File:Nr_2677,_bordsarmatur.jpg
+  https://creativecommons.org/licenses/by-sa/4.0/
+
+Unsplash product reference photos
+- backpack-photo-1.jpg: Unsplash photo 1553062407-98eeb64c6a62.
+  https://images.unsplash.com/photo-1553062407-98eeb64c6a62
+- backpack-photo-2.jpg: Unsplash photo 1622560480654-d96214fdc887.
+  https://images.unsplash.com/photo-1622560480654-d96214fdc887
+- backpack-photo-3.jpg: Unsplash photo 1581605405669-fcdf81165afa.
+  https://images.unsplash.com/photo-1581605405669-fcdf81165afa
+- headphones-photo-1.jpg: Unsplash photo 1505740420928-5e560c06d30e.
+  https://images.unsplash.com/photo-1505740420928-5e560c06d30e
+- headphones-photo-2.jpg: Unsplash photo 1546435770-a3e426bf472b.
+  https://images.unsplash.com/photo-1546435770-a3e426bf472b
+- headphones-photo-3.jpg: Unsplash photo 1545127398-14699f92334b.
+  https://images.unsplash.com/photo-1545127398-14699f92334b
+- sneakers-photo-1.jpg: Unsplash photo 1525966222134-fcfa99b8ae77.
+  https://images.unsplash.com/photo-1525966222134-fcfa99b8ae77
+- sneakers-photo-2.jpg: Unsplash photo 1542291026-7eec264c27ff.
+  https://images.unsplash.com/photo-1542291026-7eec264c27ff
+- sneakers-photo-3.jpg: Unsplash photo 1595950653106-6c9ebd614d3a.
+  https://images.unsplash.com/photo-1595950653106-6c9ebd614d3a
+- Unsplash License: https://unsplash.com/license

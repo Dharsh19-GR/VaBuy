@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VaBuy Admin | <%= isEdit ? 'Edit offer' : 'New offer' %></title>
+    <style>
+      body{margin:0;font-family:Arial,sans-serif;background:#f4f6f8;color:#20252b}.content{max-width:760px;margin:32px auto;padding:0 20px}.panel{padding:24px;background:#fff;border:1px solid #e5e7eb;border-radius:8px}label{display:block;margin:14px 0 6px;font-weight:bold}input,select{box-sizing:border-box;width:100%;padding:10px;border:1px solid #d5dbe3;border-radius:6px}.row{display:grid;grid-template-columns:1fr 1fr;gap:14px}.button{margin-top:20px;padding:12px 16px;border:0;border-radius:6px;background:#2563eb;color:#fff;cursor:pointer}.error{padding:12px;background:#fef3f2;color:#b42318}@media(max-width:600px){.row{grid-template-columns:1fr}}
+    </style>
+    <link rel="stylesheet" href="/styles.css">
+    <script defer src="/app.js"></script>
+  </head>
+  <body>
+    <main class="content">
+      <p><a href="/admin/offers">← Offers</a></p>
+      <h1><%= isEdit ? 'Edit offer' : 'Create offer' %></h1>
+      <section class="panel">
+        <% if (error) { %><p class="error" role="alert"><%= error %></p><% } %>
+        <form action="/admin/offers" method="post">
+          <% if (isEdit) { %><input type="hidden" name="offerId" value="<%= offer._id %>"><% } %>
+          <label for="name">Offer name</label>
+          <input id="name" name="name" value="<%= offer.name || '' %>" maxlength="100" required>
+          <label for="type">Offer type</label>
+          <select id="type" name="type" <%= isEdit ? 'disabled' : '' %>>
+            <option value="product" <%= offer.type === 'product' ? 'selected' : '' %>>Product offer</option>
+            <option value="category" <%= offer.type === 'category' ? 'selected' : '' %>>Category offer</option>
+            <option value="referral" <%= offer.type === 'referral' ? 'selected' : '' %>>Referral offer</option>
+          </select>
+          <% if (isEdit) { %><input type="hidden" name="type" value="<%= offer.type %>"><% } %>
+          <div id="product-field">
+            <label for="product">Product</label>
+            <select id="product" name="product"><option value="">Choose a product</option>
+              <% products.forEach(product => { %><option value="<%= product._id %>" <%= String(offer.product) === String(product._id) ? 'selected' : '' %>><%= product.name %></option><% }); %>
+            </select>
+          </div>
+          <div id="category-field">
+            <label for="category">Category</label>
+            <select id="category" name="category"><option value="">Choose a category</option>
+              <% categories.forEach(category => { %><option value="<%= category._id %>" <%= String(offer.category) === String(category._id) ? 'selected' : '' %>><%= category.name %></option><% }); %>
+            </select>
+          </div>
+          <div id="code-field">
+            <label for="code">Referral code (customers enter it at signup)</label>
+            <input id="code" name="code" value="<%= offer.code || '' %>" maxlength="30" pattern="[A-Za-z0-9_-]{3,30}">
+          </div>
+          <div class="row">
+            <div><label for="discountType">Discount type</label>
+              <select id="discountType" name="discountType">
+                <option value="percentage" <%= offer.discountType === 'percentage' ? 'selected' : '' %>>Percentage</option>
+                <option value="fixed" <%= offer.discountType === 'fixed' ? 'selected' : '' %>>Fixed amount (INR)</option>
+              </select>
+            </div>
+            <div><label for="value">Discount value</label><input id="value" name="value" type="number" min="0.01" step="0.01" max="<%= offer.discountType === 'percentage' ? 100 : '' %>" value="<%= offer.value || '' %>" required></div>
+          </div>
+          <div class="row">
+            <div><label for="startsAt">Starts at</label><input id="startsAt" name="startsAt" type="datetime-local" value="<%= offer.startsAt ? new Date(offer.startsAt).toISOString().slice(0,16) : '' %>" required></div>
+            <div><label for="endsAt">Ends at</label><input id="endsAt" name="endsAt" type="datetime-local" value="<%= offer.endsAt ? new Date(offer.endsAt).toISOString().slice(0,16) : '' %>" required></div>
+          </div>
+          <label><input type="checkbox" name="isActive" style="width:auto" <%= offer.isActive ? 'checked' : '' %>> Enabled</label>
+          <button class="button" type="submit">Save offer</button>
+        </form>
+      </section>
+    </main>
+    <script>
+      const typeInput = document.getElementById("type");
+      const fields = {
+        product: document.getElementById("product-field"),
+        category: document.getElementById("category-field"),
+        referral: document.getElementById("code-field")
+      };
+      const updateOfferFields = () => {
+        const type = typeInput.value;
+        Object.entries(fields).forEach(([key, field]) => {
+          field.hidden = key !== type;
+          const control = field.querySelector("select, input");
+          if (control) control.required = key === type;
+        });
+      };
+      typeInput.addEventListener("change", updateOfferFields);
+      updateOfferFields();
+      const discountType = document.getElementById("discountType");
+      const value = document.getElementById("value");
+      discountType.addEventListener("change", () => {
+        value.max = discountType.value === "percentage" ? "100" : "";
+      });
+    </script>
+  </body>
+</html>

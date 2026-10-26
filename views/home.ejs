@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VaBuy | Home</title>
+  <style>
+    body { margin: 0; font-family: Arial, sans-serif; color: #20252b; background: #f7f8fa; } header { padding: 18px 6%; display: flex; justify-content: space-between; align-items: center; gap: 16px; background: #fff; border-bottom: 1px solid #e5e7eb; } nav { display:flex; align-items:center; flex-wrap:wrap; gap:18px; } nav a { color: #344054; text-decoration: none; } .brand { color: #2563eb; font-size: 24px; font-weight: bold; }
+    .hero { padding: 54px 6%; background: #dbeafe; } .hero h1 { max-width: 620px; font-size: 42px; margin: 0 0 12px; } .hero p { font-size: 18px; }
+    .content { padding: 34px 6%; } .products { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 20px; } .product { padding: 20px; background: #fff; border: 1px solid #e5e7eb; border-radius: 8px; } .image { height: 140px; display: grid; place-items: center; background: #eef2ff; border-radius: 6px; color: #64748b; } .price { font-size: 20px; font-weight: bold; } .button { display: inline-block; padding: 10px 14px; background: #2563eb; color: white; border-radius: 6px; text-decoration: none; border:0; cursor:pointer; } .filters { display:flex; flex-wrap:wrap; gap:10px; padding:16px; margin:18px 0 24px; background:#fff; border:1px solid #e5e7eb; border-radius:8px; } .filters input,.filters select { padding:10px; border:1px solid #d5dbe3; border-radius:6px; } .badge { display:inline-block; padding:4px 8px; margin:2px; border-radius:999px; background:#ecfdf3; color:#027a48; font-size:12px; } .sold-out { color:#b42318; font-weight:bold; }
+  </style>
+  <link rel="stylesheet" href="/styles.css">
+  <script defer src="/app.js"></script>
+</head>
+<body>
+  <header><a class="brand" href="/">VaBuy</a><nav><a href="/cart">My Cart (<%= cartCount %>)</a><a href="/wishlist">Wishlist</a><% if (currentUser) { %><a href="/profile">Hi, <%= currentUser.name %></a><form action="/logout" method="post" style="display:inline;"><button type="submit">Sign out</button></form><% } else { %><a href="/login">Login</a><a href="/register">Sign up</a><% } %></nav></header>
+  <section class="hero"><h1>Useful things, thoughtfully chosen.</h1><p>Discover everyday products selected for comfort, quality, and style.</p><a class="button" href="#products">Shop now</a></section>
+  <main class="content" id="products">
+    <p class="store-notice" role="status" hidden></p>
+    <h2>Shop products</h2>
+    <form class="filters" action="/" method="get">
+      <input type="search" name="q" value="<%= filters.q %>" placeholder="Search products" aria-label="Search products" />
+      <select name="category" aria-label="Filter by category">
+        <option value="">All categories</option>
+        <% categories.forEach(category => { %><option value="<%= category._id %>" <%= String(filters.category) === String(category._id) ? 'selected' : '' %>><%= category.name %></option><% }); %>
+      </select>
+      <select name="sort" aria-label="Sort products">
+        <option value="popularity" <%= filters.sort === 'popularity' ? 'selected' : '' %>>Popularity</option>
+        <option value="price-low" <%= filters.sort === 'price-low' ? 'selected' : '' %>>Price: low to high</option>
+        <option value="price-high" <%= filters.sort === 'price-high' ? 'selected' : '' %>>Price: high to low</option>
+        <option value="rating" <%= filters.sort === 'rating' ? 'selected' : '' %>>Average ratings</option>
+        <option value="featured" <%= filters.sort === 'featured' ? 'selected' : '' %>>Featured</option>
+        <option value="newest" <%= filters.sort === 'newest' ? 'selected' : '' %>>New arrivals</option>
+        <option value="name-asc" <%= filters.sort === 'name-asc' ? 'selected' : '' %>>A–Z</option>
+        <option value="name-desc" <%= filters.sort === 'name-desc' ? 'selected' : '' %>>Z–A</option>
+      </select>
+      <select name="stock" aria-label="Filter by stock">
+        <option value="available" <%= filters.stock === 'available' ? 'selected' : '' %>>In stock</option>
+        <option value="sold-out" <%= filters.stock === 'sold-out' ? 'selected' : '' %>>Sold out</option>
+        <option value="all" <%= filters.stock === 'all' ? 'selected' : '' %>>All stock</option>
+      </select>
+      <button class="button" type="submit">Apply filters</button>
+    </form>
+    <% if (!products.length) { %><p>No available products match your search.</p><% } %>
+    <div class="products">
+      <% products.forEach(product => { %>
+        <article class="product">
+          <div class="product-media">
+            <a href="/products/<%= product.id %>?returnTo=<%= encodeURIComponent(returnTo) %>" aria-label="View <%= product.name %>"><img class="image" style="width:100%;height:180px;object-fit:cover;border-radius:6px;display:block;" src="<%= product.image || product.images?.[0] || '/images/backpack-1.svg' %>" alt="<%= product.name %>" /></a>
+            <form class="wishlist-toggle-form" action="/wishlist/toggle/<%= product.id %>" method="post">
+              <input type="hidden" name="returnTo" value="<%= returnTo %>">
+              <button class="wishlist-toggle <%= product.isWishlisted ? 'is-active' : '' %>" type="submit" aria-label="<%= product.isWishlisted ? 'Remove ' + product.name + ' from wishlist' : 'Add ' + product.name + ' to wishlist' %>" aria-pressed="<%= product.isWishlisted %>">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8l1.1 1.1L12 21l7.8-7.5 1.1-1.1a5.5 5.5 0 0 0-.1-7.8Z"/></svg>
+              </button>
+            </form>
+          </div>
+          <p><a href="/categories/<%= encodeURIComponent(product.categorySlug) %>"><%= product.category %></a></p>
+          <h3><a href="/products/<%= product.id %>?returnTo=<%= encodeURIComponent(returnTo) %>"><%= product.name %></a></h3>
+          <% if (product.imageNote) { %><p class="muted"><%= product.imageNote %></p><% } %>
+          <p>★ <%= Number(product.rating || 0).toFixed(1) %>/5</p>
+          <% if (product.compareAtPrice > product.price || product.offerDiscount > 0 || (product.couponCode && product.couponDiscountPercent > 0)) { %>
+            <div class="product-promos">
+              <% if (product.compareAtPrice > product.price) { %><span class="badge badge-savings">Save <%= Math.round((product.compareAtPrice - product.price) / product.compareAtPrice * 100) %>%</span><% } %>
+              <% if (product.offerDiscount > 0) { %><span class="badge badge-savings"><%= product.offer.name %></span><% } %>
+              <% if (product.couponCode && product.couponDiscountPercent > 0) { %><span class="badge badge-coupon"><strong><%= product.couponCode %></strong><span>Cart coupon <%= product.couponDiscountPercent %>%</span></span><% } %>
+            </div>
+          <% } %>
+          <p class="price">₹<%= Number(product.offerPrice).toFixed(2) %><% if (product.offerDiscount > 0) { %> <del style="font-size:14px;color:#667085;">₹<%= Number(product.price).toFixed(2) %></del><% } else if (product.compareAtPrice > product.price) { %> <del style="font-size:14px;color:#667085;">₹<%= Number(product.compareAtPrice).toFixed(2) %></del><% } %></p>
+          <% if (product.stock > 0) { %>
+            <p class="stock" role="status"><%= product.stock %> in stock · Max <%= Math.min(99, Number(product.maxPerOrder || 5)) %> per order</p>
+          <% } else { %><p class="sold-out" role="status">Sold out</p><% } %>
+        </article>
+      <% }); %>
+    </div>
+  </main>
+</body>
+</html>

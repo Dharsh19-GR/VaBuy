@@ -1,0 +1,38 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>VaBuy | Order history</title>
+    <style>
+      body{margin:0;font-family:Arial,sans-serif;background:#f7f8fa;color:#20252b}.content{max-width:950px;margin:34px auto;padding:0 20px}.panel{padding:20px;background:#fff;border:1px solid #e5e7eb;border-radius:8px}.table{width:100%;border-collapse:collapse}.table th,.table td{padding:14px;text-align:left;border-bottom:1px solid #e5e7eb}.status{text-transform:capitalize}.link{color:#2563eb}@media(max-width:650px){.table th:nth-child(2),.table td:nth-child(2){display:none}}
+    </style>
+    <script defer src="/app.js"></script>
+</head>
+  <body>
+    <main class="content">
+      <p><a href="/profile">← My profile</a></p>
+      <h1>Order history</h1>
+      <section class="panel">
+        <% if (!orders.length) { %>
+          <p>You have not placed any orders yet. <a href="/">Browse products</a></p>
+        <% } else { %>
+          <table class="table">
+            <thead><tr><th>Order</th><th>Date</th><th>Total</th><th>Status</th><th></th></tr></thead>
+            <tbody>
+              <% orders.forEach(order => { %>
+                <tr>
+                  <td><%= order.orderNumber %></td>
+                  <td><%= new Date(order.createdAt).toLocaleDateString() %></td>
+                  <td>₹<%= order.total.toFixed(2) %></td>
+                  <td class="status"><%= order.status %></td>
+                  <td><a class="link" href="/orders/<%= order._id %>">View order</a></td>
+                </tr>
+              <% }); %>
+            </tbody>
+          </table>
+        <% } %>
+      </section>
+    </main>
+  </body>
+</html>

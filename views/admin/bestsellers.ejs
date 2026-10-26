@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>VaBuy Admin | <%= title %></title>
+    <style>
+      *{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#f4f6f8;color:#20252b}.content{max-width:1100px;margin:30px auto;padding:0 20px}.panel{background:#fff;border:1px solid #e5e7eb;border-radius:10px;padding:22px}.topline{display:flex;align-items:center;justify-content:space-between;gap:18px;flex-wrap:wrap}.topline a{color:#2563eb}form{display:flex;align-items:center;gap:10px}select{padding:9px;border:1px solid #d0d5dd;border-radius:6px}.table-wrap{overflow-x:auto;margin-top:18px}table{width:100%;border-collapse:collapse;min-width:600px}th,td{text-align:left;padding:13px;border-bottom:1px solid #eaecf0}th{font-size:13px;color:#667085;background:#f9fafb}.rank{width:55px;color:#667085}.empty{padding:28px;text-align:center;color:#667085}.mobile-list{display:none}.mobile-row{padding:14px 0;border-bottom:1px solid #eaecf0}.mobile-row strong{display:block;margin-bottom:7px}.stats{display:flex;gap:14px;flex-wrap:wrap;color:#475467;font-size:14px}
+      @media(max-width:640px){.content{padding:0 12px;margin:16px auto}.panel{padding:16px}.table-wrap{display:none}.mobile-list{display:block}.topline h1{font-size:23px}}
+    </style>
+  </head>
+  <body>
+    <main class="content">
+      <section class="panel">
+        <div class="topline">
+          <div><p><a href="/admin">← Dashboard</a></p><h1><%= title %></h1><p>Ranked by units sold · <%= period === 'week' ? 'Last 7 days' : period === 'month' ? 'Last 30 days' : period === 'year' ? 'This year' : 'Today' %></p></div>
+          <form method="get" action="/admin/bestsellers/<%= type %>">
+            <label for="period">Period</label><select id="period" name="period" onchange="this.form.submit()"><% [['day','Today'],['week','Last 7 days'],['month','Last 30 days'],['year','This year']].forEach(([value,label]) => { %><option value="<%= value %>" <%= period === value ? 'selected' : '' %>><%= label %></option><% }); %></select>
+          </form>
+        </div>
+        <% if (rows.length) { %>
+          <div class="table-wrap"><table><thead><tr><th>#</th><th>Name</th><th>Units sold</th><th>Orders</th><th>Sales (INR)</th></tr></thead><tbody><% rows.forEach((row,index) => { %><tr><td class="rank"><%= index + 1 %></td><td><%= row.name %></td><td><%= row.units %></td><td><%= row.orders %></td><td>₹<%= row.revenue.toFixed(2) %></td></tr><% }); %></tbody></table></div>
+          <div class="mobile-list"><% rows.forEach((row,index) => { %><article class="mobile-row"><strong><%= index + 1 %>. <%= row.name %></strong><div class="stats"><span><%= row.units %> units</span><span><%= row.orders %> orders</span><span>₹<%= row.revenue.toFixed(2) %></span></div></article><% }); %></div>
+        <% } else { %><p class="empty">No paid sales found for this period.</p><% } %>
+      </section>
+    </main>
+  </body>
+</html>

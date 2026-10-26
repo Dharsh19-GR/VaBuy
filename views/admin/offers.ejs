@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VaBuy Admin | Offers</title>
+    <style>
+      body{margin:0;font-family:Arial,sans-serif;background:#f4f6f8;color:#20252b}.content{max-width:1200px;margin:32px auto;padding:0 20px}.top{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}.button{display:inline-block;padding:10px 14px;border-radius:6px;background:#2563eb;color:#fff;text-decoration:none;border:0;cursor:pointer}.panel{padding:20px;background:#fff;border:1px solid #e5e7eb;border-radius:8px;overflow:auto}.table{width:100%;border-collapse:collapse}.table th,.table td{padding:12px;text-align:left;border-bottom:1px solid #e5e7eb}.inline{display:inline}.muted{color:#667085}.notice{padding:12px;background:#ecfdf3;color:#027a48}.error{padding:12px;background:#fef3f2;color:#b42318}.actions{display:flex;gap:8px;align-items:center}
+    </style>
+    <link rel="stylesheet" href="/styles.css">
+    <script defer src="/app.js"></script>
+  </head>
+  <body>
+    <main class="content">
+      <p><a href="/admin">← Dashboard</a> · <a href="/admin/reports/sales">Sales reports</a></p>
+      <div class="top"><h1>Offers</h1><div class="actions">
+        <a class="button" href="/admin/offers/new?type=product">Product offer</a>
+        <a class="button" href="/admin/offers/new?type=category">Category offer</a>
+        <a class="button" href="/admin/offers/new?type=referral">Referral offer</a>
+      </div></div>
+      <% if (message) { %><p class="notice" role="status"><%= message %></p><% } %>
+      <% if (error) { %><p class="error" role="alert"><%= error %></p><% } %>
+      <section class="panel">
+        <% if (!offers.length) { %><p class="muted">No offers created yet.</p><% } else { %>
+          <table class="table">
+            <thead><tr><th>Name / code</th><th>Type</th><th>Applies to</th><th>Discount</th><th>Schedule</th><th>Status</th><th>Actions</th></tr></thead>
+            <tbody>
+              <% offers.forEach(offer => { %>
+                <tr>
+                  <td><strong><%= offer.name %></strong><% if (offer.code) { %><br><code><%= offer.code %></code><% } %></td>
+                  <td><%= offer.type[0].toUpperCase() + offer.type.slice(1) %></td>
+                  <td><%= offer.product?.name || offer.category?.name || (offer.type === 'referral' ? 'New customer first order' : '—') %></td>
+                  <td><%= offer.discountType === 'percentage' ? `${offer.value}%` : `₹${Number(offer.value).toFixed(2)}` %></td>
+                  <td><%= new Date(offer.startsAt).toLocaleString() %><br>to <%= new Date(offer.endsAt).toLocaleString() %></td>
+                  <td><%= offer.isActive ? 'Enabled' : 'Disabled' %></td>
+                  <td><div class="actions">
+                    <a href="/admin/offers/<%= offer._id %>/edit">Edit</a>
+                    <form class="inline" action="/admin/offers/<%= offer._id %>/toggle" method="post"><button type="submit"><%= offer.isActive ? 'Disable' : 'Enable' %></button></form>
+                  </div></td>
+                </tr>
+              <% }); %>
+            </tbody>
+          </table>
+        <% } %>
+      </section>
+    </main>
+  </body>
+</html>

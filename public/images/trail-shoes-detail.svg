@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 700" role="img" aria-labelledby="title">
+  <title id="title">Trail running shoe tread and mesh detail</title>
+  <defs><linearGradient id="bg" x2="1" y2="1"><stop stop-color="#dcebe3"/><stop offset="1" stop-color="#efe3d1"/></linearGradient><pattern id="mesh" width="19" height="19" patternUnits="userSpaceOnUse"><path d="M0 0l19 19M19 0L0 19" stroke="#7e3a36" stroke-width="2" opacity=".27"/></pattern></defs>
+  <rect width="900" height="700" rx="42" fill="url(#bg)"/><rect x="160" y="173" width="580" height="330" rx="42" fill="#d86c50" stroke="#8f3e38" stroke-width="9"/><rect x="190" y="202" width="520" height="272" rx="28" fill="url(#mesh)"/><path d="M195 520h510" stroke="#eee5d4" stroke-width="20" stroke-linecap="round"/><path d="M235 534l35 46 35-46 35 46 35-46 35 46 35-46 35 46 35-46 35 46 35-46 35 46 35-46" fill="none" stroke="#657451" stroke-width="14" stroke-linejoin="round"/><text x="450" y="635" text-anchor="middle" font-family="Arial,sans-serif" font-size="22" letter-spacing="4" fill="#4c6650">BREATHABLE MESH • TRAIL GRIP</text>
+</svg>

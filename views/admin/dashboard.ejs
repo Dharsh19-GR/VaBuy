@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>VaBuy Admin | Dashboard</title>
+    <style>
+      body { margin: 0; font-family: Arial, sans-serif; background: #f4f6f8; color: #20252b; }
+      .layout { display: grid; grid-template-columns: 220px 1fr; min-height: 100vh; }
+      .sidebar { padding: 24px; background: #172033; color: #fff; }
+      .brand { margin-bottom: 16px; font-size: 23px; font-weight: bold; color: #93c5fd; }
+      .sidebar a { display: block; padding: 13px 0; color: #d0d5dd; text-decoration: none; }
+      .sidebar button { margin-top: 14px; padding: 10px 13px; border: 1px solid #475467; border-radius: 6px; background: transparent; color: #fff; cursor: pointer; }
+      .main { padding: 30px; }
+      .metrics { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px; }
+      .metric, .panel { padding: 20px; background: #fff; border: 1px solid #e5e7eb; border-radius: 8px; }
+      .metric strong { display: block; margin-top: 8px; font-size: 25px; }
+      .shortcuts { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 18px; }
+      .shortcuts a { padding: 12px 16px; border-radius: 6px; background: #2563eb; color: #fff; text-decoration: none; }
+      .report-grid { display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,280px),1fr));gap:16px;margin-top:18px }.bars{display:flex;align-items:end;gap:5px;height:190px;margin-top:18px;border-bottom:1px solid #d0d5dd}.bar{flex:1;min-width:5px;background:#60a5fa;border-radius:4px 4px 0 0;position:relative}.bar span{position:absolute;bottom:-22px;left:50%;transform:translateX(-50%);font-size:10px;color:#667085;white-space:nowrap}.panel ol{padding-left:22px}.panel li{padding:5px 0}.ranking-card{display:block;color:inherit;text-decoration:none;transition:transform .15s,box-shadow .15s}.ranking-card:hover,.ranking-card:focus-visible{transform:translateY(-2px);box-shadow:0 8px 24px #1018281a;outline:2px solid #2563eb;outline-offset:2px}.ranking-card h2{margin-top:0}.ranking-card .view-details{color:#2563eb;font-weight:bold}
+      @media(max-width: 800px) { .layout { grid-template-columns: 1fr; } .sidebar { display: flex; gap: 18px; flex-wrap: wrap; align-items: center; } .brand { width: 100%; } .sidebar a { padding: 4px 0; } }
+    </style>
+  </head>
+  <body>
+    <div class="layout">
+      <aside class="sidebar">
+        <div class="brand">VaBuy Admin</div>
+        <a href="/admin">Dashboard</a>
+        <a href="/admin/products">Products</a>
+        <a href="/admin/categories">Categories</a>
+        <a href="/admin/users">Users</a>
+        <a href="/admin/orders">Orders</a>
+        <a href="/admin/inventory">Inventory</a>
+        <a href="/admin/offers">Offers</a>
+        <a href="/admin/reports/sales">Sales reports</a>
+        <a href="/">View store</a>
+        <form action="/admin/logout" method="post"><button type="submit">Sign out</button></form>
+      </aside>
+      <main class="main">
+        <h1>Dashboard</h1>
+        <section class="metrics" aria-label="Store summary">
+          <% metrics.forEach(metric => { %>
+            <article class="metric">
+              <span><%= metric.label %></span>
+              <strong><%= metric.value %></strong>
+            </article>
+          <% }); %>
+        </section>
+        <section class="panel" style="margin-top:22px">
+          <form method="get" action="/admin" style="display:flex;gap:12px;align-items:center"><label for="period">Sales period</label><select id="period" name="period" onchange="this.form.submit()"><% [['day','Today'],['week','Last 7 days'],['month','Last 30 days'],['year','This year']].forEach(([value,label]) => { %><option value="<%= value %>" <%= period === value ? 'selected' : '' %>><%= label %></option><% }) %></select></form>
+          <h2>Paid sales · ₹<%= revenue.toFixed(2) %></h2>
+          <div class="bars" aria-label="Sales by day"><% const maximum = Math.max(1, ...chart.map(row => row.value)); chart.forEach(row => { %><div class="bar" title="<%= row.label %>: ₹<%= row.value.toFixed(2) %>" style="height:<%= Math.max(2, row.value / maximum * 100) %>%"><span><%= row.label.slice(5) %></span></div><% }) %></div>
+        </section>
+        <section class="report-grid">
+          <% [["Best selling products", "products", topProducts], ["Best selling categories", "categories", topCategories], ["Best selling brands", "brands", topBrands]].forEach(([title, type, rows]) => { %>
+            <a class="panel ranking-card" href="/admin/bestsellers/<%= type %>?period=<%= period %>" aria-label="Open details for <%= title %>"><h2><%= title %> · Top 10</h2><% if (rows.length) { %><ol><% rows.slice(0, 5).forEach(row => { %><li><%= row.name %> <span style="color:#667085">(<%= row.units %> units)</span></li><% }) %></ol><% } else { %><p>No paid sales in this period.</p><% } %><span class="view-details">View all details →</span></a>
+          <% }) %>
+        </section>
+        <section class="panel" style="margin-top: 22px;">
+          <h2>Manage your store</h2>
+          <div class="shortcuts">
+            <a href="/admin/products">Manage products</a>
+            <a href="/admin/categories">Manage categories</a>
+            <a href="/admin/users">Manage users</a>
+            <a href="/admin/orders">Manage orders</a>
+            <a href="/admin/inventory">Manage inventory</a>
+            <a href="/admin/offers">Manage offers</a>
+            <a href="/admin/reports/sales">View sales reports</a>
+            <a href="/admin/reports/ledger.pdf">Generate ledger book (PDF)</a>
+          </div>
+        </section>
+      </main>
+    </div>
+  </body>
+</html>

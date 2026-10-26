@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VaBuy | Wallet</title>
+    <link rel="stylesheet" href="/styles.css">
+    <script defer src="/app.js"></script>
+    <style>
+      .wallet-balance { padding: 24px; margin: 18px 0; border-radius: 12px; background: #edf7ef; }
+      .wallet-balance strong { display: block; margin-top: 8px; font-size: 28px; }
+      .wallet-table { width: 100%; border-collapse: collapse; background: #fff; }
+      .wallet-table th, .wallet-table td { padding: 12px; text-align: left; border-bottom: 1px solid #e5e7eb; }
+      @media(max-width:600px) { .wallet-table th:nth-child(2), .wallet-table td:nth-child(2) { display:none; } }
+    </style>
+  </head>
+  <body>
+    <main class="content">
+      <p><a href="/profile">← My profile</a></p>
+      <h1>My Wallet</h1>
+      <section class="wallet-balance">
+        <span>Available refund balance</span>
+        <strong>₹<%= balance.toFixed(2) %></strong>
+      </section>
+      <section class="panel">
+        <h2>Wallet activity</h2>
+        <% if (!transactions.length) { %>
+          <p>No wallet refunds yet. Refunds for eligible cancelled or returned paid orders will appear here.</p>
+        <% } else { %>
+          <table class="wallet-table">
+            <thead><tr><th>Date</th><th>Order</th><th>Reason</th><th>Credit</th></tr></thead>
+            <tbody>
+              <% transactions.forEach(entry => { %>
+                <tr>
+                  <td><%= new Date(entry.createdAt).toLocaleDateString() %></td>
+                  <td><% if (entry.order) { %><a href="/orders/<%= entry.order._id %>"><%= entry.order.orderNumber %></a><% } else { %>Order refund<% } %></td>
+                  <td><%= entry.reason %></td>
+                  <td>+₹<%= entry.amount.toFixed(2) %></td>
+                </tr>
+              <% }); %>
+            </tbody>
+          </table>
+        <% } %>
+      </section>
+    </main>
+  </body>
+</html>

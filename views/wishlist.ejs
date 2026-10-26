@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VaBuy | My Wishlist</title>
+  <link rel="stylesheet" href="/styles.css">
+  <script defer src="/app.js"></script>
+</head>
+<body>
+  <main class="content">
+    <h1>My Wishlist</h1>
+    <% if (!wishlist.length) { %>
+      <section class="panel">
+        <p>Your wishlist is empty. Tap the heart on a product to save it here.</p>
+        <a class="button" href="/#products">Discover products</a>
+      </section>
+    <% } else { %>
+      <div class="products">
+        <% wishlist.forEach(product => { %>
+          <article class="product">
+            <div class="product-media">
+              <a href="/products/<%= product.id %>" aria-label="View <%= product.name %>">
+                <img class="image" src="<%= product.image %>" alt="<%= product.name %>">
+              </a>
+              <form class="wishlist-toggle-form" action="/wishlist/toggle/<%= product.id %>" method="post">
+                <input type="hidden" name="returnTo" value="/wishlist">
+                <button class="wishlist-toggle is-active" type="submit" aria-label="Remove <%= product.name %> from wishlist" aria-pressed="true">
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8l1.1 1.1L12 21l7.8-7.5 1.1-1.1a5.5 5.5 0 0 0-.1-7.8Z"/></svg>
+                </button>
+              </form>
+            </div>
+            <p><%= product.category %></p>
+            <h3><a href="/products/<%= product.id %>"><%= product.name %></a></h3>
+            <p class="price">₹<%= Number(product.price).toFixed(2) %></p>
+            <% if (product.stock > 0) { %>
+              <p class="stock"><%= product.stock %> in stock</p>
+            <% } else { %>
+              <p class="sold-out">Sold out</p>
+            <% } %>
+          </article>
+        <% }); %>
+      </div>
+    <% } %>
+  </main>
+</body>
+</html>

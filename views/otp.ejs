@@ -1,0 +1,70 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title><%= purpose === "password-reset" ? "Password reset" : "OTP verification" %> | VaBuy</title>
+    <style>
+      body { margin: 0; padding: 20px; font-family: Arial, sans-serif; background: #f4f6f8; color: #20252b; }
+      .panel { max-width: 440px; margin: 8vh auto; padding: 30px; background: #fff; border-radius: 12px; box-shadow: 0 8px 30px #00000012; }
+      h1 { margin-top: 0; color: #2563eb; }
+      label { display: block; margin: 18px 0 6px; font-weight: bold; }
+      input { box-sizing: border-box; width: 100%; padding: 12px; border: 1px solid #d5dbe3; border-radius: 6px; }
+      button { padding: 12px 16px; border: 0; border-radius: 6px; background: #2563eb; color: #fff; font-weight: bold; cursor: pointer; }
+      button:disabled { background: #98a2b3; cursor: not-allowed; }
+      .verify { width: 100%; margin-top: 20px; }
+      .error { padding: 12px; border-radius: 6px; background: #fef3f2; color: #b42318; }
+      .muted { color: #667085; }
+      .resend { margin-top: 14px; }
+    </style>
+    <script defer src="/app.js"></script>
+</head>
+  <body>
+    <main class="panel">
+      <h1><%= purpose === "password-reset" ? "Reset your password" : "Verify your email" %></h1>
+      <% if (purpose === "password-reset") { %>
+        <p class="muted">If an account exists for this email, a reset code has been sent.</p>
+      <% } else { %>
+        <p class="muted">Enter the 6-digit code sent to <strong><%= email %></strong>.</p>
+      <% } %>
+      <% if (error) { %><p class="error" role="alert"><%= error %></p><% } %>
+      <% if (expiresAt) { %>
+        <p class="muted">Code expires in <strong id="otp-countdown">05:00</strong>.</p>
+        <form action="<%= purpose === 'password-reset' ? '/reset-password/verify-otp' : '/verify-otp' %>" method="post">
+          <label for="otp">Verification code</label>
+          <input id="otp" type="text" name="otp" inputmode="numeric" autocomplete="one-time-code" pattern="[0-9]{6}" minlength="6" maxlength="6" placeholder="000000" required autofocus />
+          <button class="verify" type="submit">Verify code</button>
+        </form>
+        <form class="resend" action="/resend-otp" method="post">
+          <input type="hidden" name="purpose" value="<%= purpose %>" />
+          <button id="resend-button" type="submit" disabled>Resend code</button>
+          <span id="resend-countdown" class="muted"></span>
+        </form>
+      <% } %>
+      <p><a href="<%= purpose === 'password-reset' ? '/forgot-password' : '/register' %>">Back</a></p>
+    </main>
+    <% if (expiresAt) { %>
+      <script>
+        const expiresAt = <%- JSON.stringify(expiresAt) %>;
+        const resendAt = <%- JSON.stringify(resendAfter + 30000) %>;
+        const countdown = document.getElementById("otp-countdown");
+        const resendButton = document.getElementById("resend-button");
+        const resendCountdown = document.getElementById("resend-countdown");
+        const formatTime = (milliseconds) => {
+          const totalSeconds = Math.max(0, Math.ceil(milliseconds / 1000));
+          return `${String(Math.floor(totalSeconds / 60)).padStart(2, "0")}:${String(totalSeconds % 60).padStart(2, "0")}`;
+        };
+        const updateTimers = () => {
+          const now = Date.now();
+          countdown.textContent = formatTime(expiresAt - now);
+          const resendRemaining = resendAt - now;
+          resendButton.disabled = resendRemaining > 0;
+          resendCountdown.textContent = resendRemaining > 0 ? `Available in ${formatTime(resendRemaining)}` : "";
+          if (expiresAt <= now) countdown.textContent = "Expired";
+        };
+        updateTimers();
+        setInterval(updateTimers, 1000);
+      </script>
+    <% } %>
+  </body>
+</html>

@@ -1,0 +1,97 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>VaBuy | Login</title>
+    <style>
+      body { margin: 0; padding: 20px; font-family: Arial, sans-serif; background: linear-gradient(135deg, #f7f9fc, #eef3fb); color: #20252b; }
+      .panel { max-width: 440px; margin: 8vh auto; padding: 32px; background: #fff; border: 1px solid #e8edf4; border-radius: 12px; box-shadow: 0 12px 34px #1d293910; }
+      h1 { margin-top: 0; color: #2563eb; }
+      .welcome-heart { color: #e11d48; }
+      label { display: block; margin: 18px 0 6px; font-weight: bold; }
+      input { box-sizing: border-box; width: 100%; padding: 12px; border: 1px solid #d5dbe3; border-radius: 6px; transition: border-color .18s ease, box-shadow .18s ease; }
+      input:focus { outline: none; border-color: #7aa5f8; box-shadow: 0 0 0 3px #2563eb1a; }
+      button, .social { display: block; box-sizing: border-box; width: 100%; margin-top: 18px; padding: 13px; border: 0; border-radius: 6px; background: #2563eb; color: #fff; font-weight: bold; text-align: center; text-decoration: none; cursor: pointer; transition: background .18s ease, transform .18s ease, border-color .18s ease; }
+      button:hover { background: #1d4ed8; transform: translateY(-1px); }
+      .social { display: flex; align-items: center; justify-content: center; gap: 10px; }
+      .social-logo { width: 20px; height: 20px; flex: 0 0 20px; }
+      .social.google { background: #fff; border: 1px solid #d0d5dd; color: #20252b; }
+      .social.facebook { background: #fff; border: 1px solid #d0d5dd; color: #20252b; }
+      .social:hover { border-color: #98a2b3; background: #f9fafb; }
+      .error { padding: 12px; border-radius: 6px; background: #fef3f2; color: #b42318; }
+      .muted { color: #667085; text-align: center; }
+      a { color: #2563eb; }
+      .divider { margin: 22px 0; text-align: center; color: #667085; }
+      @media (max-width: 520px) { .panel { margin: 4vh auto; padding: 24px 20px; } }
+    </style>
+    <script defer src="/app.js"></script>
+</head>
+  <body>
+    <main class="panel">
+      <h1>Welcome to VaBuy <span class="welcome-heart" aria-label="with love">♥</span></h1>
+      <p>Sign in to continue shopping with VaBuy.</p>
+      <% if (typeof message !== "undefined" && message) { %><p class="error" role="status"><%= message %></p><% } %>
+      <p class="error" role="alert" <%= typeof error !== "undefined" && error ? '' : 'hidden' %>><%= typeof error !== "undefined" && error ? error : '' %></p>
+      <form action="/login" method="post" novalidate>
+        <input type="hidden" name="returnTo" value="<%= typeof returnTo !== 'undefined' ? returnTo : '/' %>" />
+        <label for="email">Email address</label>
+        <input id="email" name="email" type="email" placeholder="alex@example.com" autocomplete="email" required />
+        <label for="password">Password</label>
+        <input id="password" name="password" type="password" autocomplete="current-password" required />
+        <button type="submit">Login</button>
+      </form>
+      <p class="muted">Forgot your password? <a href="/forgot-password">Reset it</a></p>
+      <div class="divider">or continue with</div>
+      <a class="social google" href="/auth/google?returnTo=<%= encodeURIComponent(typeof returnTo !== 'undefined' ? returnTo : '/') %>">
+        <svg class="social-logo" viewBox="0 0 48 48" aria-hidden="true">
+          <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5Z" transform="translate(0 4)" />
+          <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.4-4.55H24v9.02h12.9c-.58 2.96-2.26 5.47-4.76 7.16l7.73 6C44.38 37.96 46.98 31.86 46.98 24.55Z" />
+          <path fill="#FBBC05" d="M10.53 28.59a14.4 14.4 0 0 1 0-9.18l-7.98-6.19a23.9 23.9 0 0 0 0 21.56l7.98-6.19Z" transform="translate(0 4)" />
+          <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.9-5.82l-7.73-6c-2.15 1.45-4.9 2.3-8.17 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48Z" />
+        </svg>
+        <span>Continue with Google</span>
+      </a>
+      <a class="social facebook" href="/auth/facebook?returnTo=<%= encodeURIComponent(typeof returnTo !== 'undefined' ? returnTo : '/') %>">
+        <svg class="social-logo" viewBox="0 0 24 24" aria-hidden="true">
+          <path fill="#1877F2" d="M24 12a12 12 0 1 0-13.875 11.85v-8.38H7.078V12h3.047V9.356c0-3.007 1.792-4.669 4.533-4.669 1.313 0 2.686.235 2.686.235v2.953h-1.513c-1.49 0-1.956.925-1.956 1.874V12h3.328l-.532 3.47h-2.796v8.38A12.002 12.002 0 0 0 24 12Z" />
+        </svg>
+        <span>Continue with Facebook</span>
+      </a>
+      <p class="muted">New customer? <a href="/register">Create an account</a></p>
+    </main>
+    <script>
+      const loginForm = document.querySelector('form[action="/login"]');
+      const errorBanner = document.querySelector('[role="alert"]');
+      loginForm.querySelectorAll("[required]").forEach((field) => {
+        function setFieldMessage() {
+          if (field.validity.valueMissing) {
+            field.setCustomValidity("Fill the fields.");
+          } else if (field.type === "email" && field.validity.typeMismatch) {
+            field.setCustomValidity("Enter a valid email address.");
+          } else {
+            field.setCustomValidity("");
+          }
+        }
+        setFieldMessage();
+        field.addEventListener("input", () => { setFieldMessage(); errorBanner.hidden = true; });
+        field.addEventListener("change", () => { setFieldMessage(); errorBanner.hidden = true; });
+      });
+      loginForm.addEventListener("submit", (event) => {
+        const fields = [...loginForm.querySelectorAll("[required]")];
+        fields.forEach((field) => {
+          if (field.validity.valueMissing) field.setCustomValidity("Fill the fields.");
+          else if (field.type === "email" && field.validity.typeMismatch) field.setCustomValidity("Enter a valid email address.");
+          else field.setCustomValidity("");
+        });
+        const invalidField = fields.find((field) => !field.validity.valid);
+        if (!invalidField) return;
+        event.preventDefault();
+        errorBanner.textContent = invalidField.validity.valueMissing
+          ? "Fill the fields."
+          : "Enter a valid email address.";
+        errorBanner.hidden = false;
+      });
+    </script>
+  </body>
+</html>
